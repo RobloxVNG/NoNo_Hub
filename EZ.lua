@@ -1,5 +1,5 @@
 -- ======================================================
--- NONO HUB - FULL PREMIUM VERSION (OPEN SOURCE)
+-- NONO HUB - FULL PREMIUM VERSION (EZ.LUA)
 -- ======================================================
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -7,7 +7,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "🌊 NoNo Hub | Blox Fruits Premium V4",
    LoadingTitle = "Đang khởi chạy NoNo Hub...",
-   LoadingSubtitle = "by NoNo - Full Chức Năng",
+   LoadingSubtitle = "by NoNo - High Performance",
    ConfigurationSaving = {Enabled = true, Folder = "NoNoHubConfig"}
 })
 
@@ -16,152 +16,76 @@ _G.AutoFarm = false
 _G.SelectWeapon = "Melee"
 _G.AutoStats = false
 _G.StatType = "Melee"
-_G.AutoChest = false
-_G.AutoPickFruit = false
-_G.AutoStoreFruit = false
+_G.AutoGunAim = false
+_G.NoCooldownGun = false
 _G.StartSeaEvent = false
-_G.BoatSpeed = 100
-_G.M1Fruit = false
-_G.AutoKitsune = false
-_G.AutoMagmaEvent = false
 _G.ESPFruit = false
-_G.ESPPlayer = false
 _G.BlackScreen = false
 
--- === HÀM TRANG BỊ VŨ KHÍ ===
-function EquipWeapon()
+-- === HÀM HỖ TRỢ ===
+function EquipWeapon(toolType)
     for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-        if v:IsA("Tool") and (v.ToolTip == _G.SelectWeapon or v.Name == _G.SelectWeapon) then
+        if v:IsA("Tool") and (v.ToolTip == toolType or v.Name == toolType) then
             game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
         end
     end
 end
 
--- === TAB 1: FARM LEVEL (Chi tiết) ===
-local FarmTab = Window:CreateTab("🌾 Farm", 4483362458)
+-- === GIAO DIỆN CÁC TAB ===
+
+-- TAB FARM
+local FarmTab = Window:CreateTab("🌾 Farm & Gun", 4483362458)
+
 FarmTab:CreateToggle({
-   Name = "Auto Farm Level (Tự nhận Quest)",
+   Name = "Auto Farm Level",
    CurrentValue = false,
    Callback = function(Value) _G.AutoFarm = Value end,
 })
-FarmTab:CreateDropdown({
-   Name = "Chọn Vũ Khí Farm",
-   Options = {"Melee", "Sword", "Blox Fruit"},
-   CurrentOption = {"Melee"},
-   Callback = function(Option) _G.SelectWeapon = Option[1] end,
+
+FarmTab:CreateSection("Súng (Gun) Special")
+
+FarmTab:CreateToggle({
+   Name = "Auto Gun & Aim Bot (Tự bắn quái)",
+   CurrentValue = false,
+   Callback = function(Value) _G.AutoGunAim = Value end,
 })
 
--- === TAB 2: NHẶT ĐỒ & ESP (Auto Nhặt) ===
-local CollectTab = Window:CreateTab("📦 Nhặt & ESP", 4483362458)
-CollectTab:CreateSection("Auto Thu Thập")
-CollectTab:CreateToggle({
-   Name = "Auto Nhặt Rương (Di chuyển mượt)",
+FarmTab:CreateToggle({
+   Name = "No Cooldown Gun (Súng không hồi chiêu)",
    CurrentValue = false,
-   Callback = function(Value) _G.AutoChest = Value end,
-})
-CollectTab:CreateToggle({
-   Name = "Auto Nhặt Trái Ác Quỷ",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoPickFruit = Value end,
-})
-CollectTab:CreateToggle({
-   Name = "Auto Cất Trái (Store)",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoStoreFruit = Value end,
-})
-CollectTab:CreateSection("Nhìn Xuyên Thấu")
-CollectTab:CreateToggle({
-   Name = "ESP Người Chơi",
-   CurrentValue = false,
-   Callback = function(Value) _G.ESPPlayer = Value end,
-})
-CollectTab:CreateToggle({
-   Name = "ESP Trái Ác Quỷ",
-   CurrentValue = false,
-   Callback = function(Value) _G.ESPFruit = Value end,
+   Callback = function(Value) _G.NoCooldownGun = Value end,
 })
 
--- === TAB 3: SEA EVENT (Săn Quái Biển) ===
-local SeaTab = Window:CreateTab("🌊 Sea Event", 4483362458)
-SeaTab:CreateDropdown({
-   Name = "Chọn Thuyền",
-   Options = {"Sloop", "Brig", "Lantern"},
-   CurrentOption = {"Sloop"},
-   Callback = function(Option) _G.SelectedBoat = Option[1] end,
-})
-SeaTab:CreateSlider({
-   Name = "Tốc Độ Thuyền",
-   Min = 50, Max = 300, CurrentValue = 100,
-   Callback = function(Value) _G.BoatSpeed = Value end,
-})
-SeaTab:CreateToggle({
-   Name = "Bắt Đầu Đi Sea Event",
+-- TAB CHỈ SỐ
+local StatTab = Window:CreateTab("📊 Chỉ Số", 4483362458)
+StatTab:CreateToggle({
+   Name = "Auto Cộng Điểm",
    CurrentValue = false,
-   Callback = function(Value) _G.StartSeaEvent = Value end,
-})
-SeaTab:CreateToggle({
-   Name = "Ưu Tiên M1 Fruit (Click trái)",
-   CurrentValue = false,
-   Callback = function(Value) _G.M1Fruit = Value end,
+   Callback = function(Value) _G.AutoStats = Value end,
 })
 
--- === TAB 4: SĂN ĐẢO (Mirage, Kit, Magma) ===
-local IslandTab = Window:CreateTab("🏝️ Săn Đảo", 4483362458)
-IslandTab:CreateSection("Mirage Island")
-IslandTab:CreateButton({
-   Name = "Bay Tới Đảo Kì Bí (Nếu có)",
-   Callback = function() 
-      local m = game.Workspace:FindFirstChild("Mirage Island")
-      if m then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = m:GetModelCFrame() end
-   end,
-})
-IslandTab:CreateButton({
-   Name = "Lên Đỉnh Cao Nhất / Tìm Blue Gear",
-   Callback = function() -- Logic tìm Gear
-   end,
-})
-IslandTab:CreateSection("Kitsune & Magma")
-IslandTab:CreateToggle({
-   Name = "Auto Nhặt Linh Hồn Kitsune",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoKitsune = Value end,
-})
-IslandTab:CreateToggle({
-   Name = "Auto Event Núi Lửa (Lấp hố)",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoMagmaEvent = Value end,
-})
-
--- === TAB 5: HỆ THỐNG (Tối ưu) ===
+-- TAB HỆ THỐNG
 local SysTab = Window:CreateTab("⚙️ Hệ Thống", 4483362458)
-SysTab:CreateButton({
-   Name = "Fix Lag (Xóa Texture)",
-   Callback = function() 
-      for _,v in pairs(game:GetDescendants()) do 
-         if v:IsA("Decal") or v:IsA("Texture") then v:Destroy() end 
-      end 
-   end,
-})
 SysTab:CreateToggle({
-   Name = "Màn Hình Đen (Tiết kiệm pin)",
+   Name = "Màn Hình Đen (Treo Máy)",
    CurrentValue = false,
    Callback = function(Value)
-      _G.BlackScreen = Value
       local black = game:GetService("CoreGui"):FindFirstChild("NoNoBlack") or Instance.new("ScreenGui", game:GetService("CoreGui"))
       black.Name = "NoNoBlack"
-      local f = black:FindFirstChild("F") or Instance.new("Frame", black)
-      f.Name = "F"
+      local f = black:FindFirstChild("Frame") or Instance.new("Frame", black)
       f.Size = UDim2.new(1,0,1,0); f.BackgroundColor3 = Color3.new(0,0,0); f.Visible = Value
    end,
 })
 
--- === BỘ NÃO XỬ LÝ TRUNG TÂM (LOGIC) ===
+-- === BỘ NÃO XỬ LÝ (LOGIC) ===
+
+-- 1. Vòng lặp Auto Farm & Gun
 spawn(function()
     while task.wait() do
         pcall(function()
-            -- Logic Farm Level
+            -- Logic Auto Farm Level
             if _G.AutoFarm then
-                EquipWeapon()
+                EquipWeapon(_G.SelectWeapon)
                 for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                     if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)
@@ -169,26 +93,60 @@ spawn(function()
                     end
                 end
             end
-            
-            -- Logic Nhặt Rương
-            if _G.AutoChest then
-                for _,v in pairs(game.Workspace:GetChildren()) do
-                    if v.Name:find("Chest") then
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
-                        task.wait(0.5)
+
+            -- Logic Auto Gun & Aim Bot
+            if _G.AutoGunAim then
+                local target = nil
+                for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                    if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                        target = v
+                        break
                     end
                 end
-            end
-
-            -- Logic Sea Event (Tốc độ thuyền)
-            if _G.StartSeaEvent then
-                local boat = game.Workspace.Boats:FindFirstChild(game.Players.LocalPlayer.Name .. "Boat")
-                if boat then
-                    boat.PrimaryPart.Velocity = boat.PrimaryPart.CFrame.LookVector * _G.BoatSpeed
+                
+                if target then
+                    EquipWeapon("Gun")
+                    local gun = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                    if gun and gun.ToolTip == "Gun" then
+                        -- Gửi lệnh bắn thẳng vào quái
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ShootGun", {
+                            ["Target"] = target.HumanoidRootPart,
+                            ["Pos"] = target.HumanoidRootPart.Position
+                        })
+                        -- Auto Click
+                        game:GetService("VirtualUser"):CaptureController()
+                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                    end
                 end
             end
         end)
     end
 end)
 
-Rayfield:Notify({Title = "NoNo Hub", Content = "Chào mừng Boss! Đã load đầy đủ tính năng.", Duration = 5})
+-- 2. Vòng lặp No Cooldown Gun
+spawn(function()
+    game:GetService("RunService").Stepped:Connect(function()
+        if _G.NoCooldownGun then
+            pcall(function()
+                local gun = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                if gun and gun.ToolTip == "Gun" then
+                    -- Reset delay bắn
+                    if gun:FindFirstChild("Stats") and gun.Stats:FindFirstChild("Cooldown") then
+                        gun.Stats.Cooldown.Value = 0
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+-- 3. Vòng lặp Cộng Stats
+spawn(function()
+    while task.wait(1) do
+        if _G.AutoStats then
+            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint", _G.StatType, 1)
+        end
+    end
+end)
+
+Rayfield:Notify({Title = "NoNo Hub", Content = "Đã cập nhật Auto Gun & No Cooldown!", Duration = 5})
