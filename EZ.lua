@@ -1,106 +1,121 @@
--- [[ NONO HUB V10 - FULL PREMIUM & OPEN CODE ]]
--- Cam kết: Có Emoji, Giao diện đẹp, Không ẩn code độc hại
+-- [[ NONO HUB - UI INTERFACE GOD VERSION ]]
+-- Tông màu: Black & Blue (Hợp với Tộc Rồng và Võ Người Cá)
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("🌊 NoNo Hub | Blox Fruits V4", "DarkScene")
+local Window = Library.CreateLib("🐉 NoNo Hub V15 - DRAGON KING 🐉", "DarkScene")
 
--- === CÁC BIẾN ĐIỀU KHIỂN ===
-_G.AutoFarm = false
-_G.FastAttack = false
-_G.AutoGun = false
-_G.NoCooldown = false
-_G.WalkWater = false
-_G.AutoV4 = false
+-- =========================================================
+-- TAB 1: MAIN FARM & ECONOMY (Cày Cấp & Tiền)
+-- =========================================================
+local Tab1 = Window:NewTab("🏠 Main & Economy")
+local Section1 = Tab1:NewSection("Auto Farm & Money")
 
--- === TAB CHÍNH (FARM) ===
-local Tab1 = Window:NewTab("🌾 Farm & Combat")
-local Section1 = Tab1:NewSection("Tính năng chính")
-
-Section1:NewToggle("Auto Farm Level 🚀", "Tự động đánh quái lên cấp", function(state)
+Section1:NewToggle("Auto Farm Level", "Tự động cày cấp", function(state)
     _G.AutoFarm = state
 end)
 
-Section1:NewToggle("Fast Attack (M1) 🔥", "Đánh nhanh không delay", function(state)
-    _G.FastAttack = state
+Section1:NewToggle("Auto Collect Chest (Nhặt Rương)", "Tự động bay nhặt rương & Berry", function(state)
+    _G.AutoChest = state
 end)
 
--- === TAB SÚNG (GUN) ===
-local Tab2 = Window:NewTab("🔫 Gun Special")
-local Section2 = Tab2:NewSection("Súng bá đạo")
-
-Section2:NewToggle("Auto Gun & Aim Bot 🎯", "Tự nhắm và bắn quái", function(state)
-    _G.AutoGun = state
+Section1:NewSlider("Tween Speed (Tốc độ bay)", "Tùy chỉnh tốc độ nhặt rương", 500, 1, function(s)
+    _G.TweenSpeed = s
 end)
 
-Section2:NewToggle("No Cooldown Gun ⚡", "Súng máy xả đạn", function(state)
-    _G.NoCooldown = state
+Section1:NewButton("CPU Optimizer", "Giảm lag để treo máy", function()
+    -- Code giảm lag tại đây
 end)
 
--- === TAB SEA EVENT & TỘC ===
-local Tab3 = Window:NewTab("🌊 Sea & Race")
-local Section3 = Tab3:NewSection("Sea Event & V4")
+-- =========================================================
+-- TAB 2: DRAGON V4 PRO (Độc quyền Tộc Rồng)
+-- =========================================================
+local Tab2 = Window:NewTab("🐲 Dragon V4")
+local Section2 = Tab2:NewSection("Dragon King Trials")
 
-Section3:NewToggle("Walk On Water 🌊", "Đi trên mặt nước", function(state)
-    _G.WalkWater = state
+Section2:NewButton("Check Requirements (Mastery 500)", "Kiểm tra điều kiện Up V4", function()
+    -- Logic check 500 Mastery Kiếm/Súng/Võ
 end)
 
-Section3:NewToggle("Auto Race V3/V4 🧬", "Tự bật kĩ năng tộc", function(state)
-    _G.AutoV4 = state
+Section2:NewToggle("Auto Mastery 500 (Dragon Only)", "Tự farm Mastery cho hệ Rồng", function(state)
+    _G.AutoMasteryDragon = state
 end)
 
--- === [ LOGIC XỬ LÝ - ĐỌC ĐƯỢC 100% ] ===
-
--- 1. Fast Attack Logic
-spawn(function()
-    while task.wait() do
-        if _G.FastAttack then
-            pcall(function()
-                local Combat = require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework)
-                Combat.activeController.attackInterval = 0
-                Combat.activeController:attack()
-            end)
-        end
-    end
+Section2:NewButton("Auto Light 3 Flames", "Tự động thắp 3 ngọn lửa xanh", function()
+    -- Logic bay tới tọa độ 3 ngọn lửa
 end)
 
--- 2. Auto Gun & No Cooldown
-spawn(function()
-    while task.wait() do
-        if _G.NoCooldown then
-            local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
-            if tool and tool.ToolTip == "Gun" and tool:FindFirstChild("Stats") then
-                tool.Stats.Cooldown.Value = 0
-            end
-        end
-        if _G.AutoGun then
-            game:GetService("VirtualUser"):CaptureController()
-            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-        end
-    end
+Section2:NewButton("Bring Heart to Hydra", "Kéo tim Leviathan về đảo Hydra", function()
 end)
 
--- 3. Walk On Water
-spawn(function()
-    while task.wait() do
-        if _G.WalkWater then
-            if not game.Workspace:FindFirstChild("WaterPart") then
-                local p = Instance.new("Part", game.Workspace)
-                p.Name = "WaterPart"; p.Size = Vector3.new(200, 2, 200); p.Anchored = true; p.Transparency = 0.8
-            else
-                game.Workspace.WaterPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.X, -1, game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Z)
-            end
-        else
-            if game.Workspace:FindFirstChild("WaterPart") then game.Workspace.WaterPart:Destroy() end
-        end
-    end
+-- =========================================================
+-- TAB 3: SEA EVENT & TIKI (Đi biển & Núi lửa)
+-- =========================================================
+local Tab3 = Window:NewTab("🌊 Sea Event")
+local Section3 = Tab3:NewSection("Tiki Outpost & Volcano")
+
+Section3:NewButton("Auto Buy Boat (Tiki)", "Mua thuyền & Dịch chuyển lên ghế", function()
 end)
 
--- 4. Auto V3/V4
-spawn(function()
-    while task.wait(1) do
-        if _G.AutoV4 then
-            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ActivateAbility")
-            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Y, false, game)
-        end
-    end
+Section3:NewToggle("Anti-Lava (Lắp hố núi lửa)", "Không mất máu khi đi trên dung nham", function(state)
+    _G.AntiLava = state
+end)
+
+Section3:NewToggle("Auto Sea Beast", "Tự động săn quái biển", function(state)
+    _G.AutoSB = state
+end)
+
+-- =========================================================
+-- TAB 4: SERVER HOP (Nhảy Server)
+-- =========================================================
+local Tab4 = Window:NewTab("🌐 Server Hop")
+local Section4 = Tab4:NewSection("Infinite Hop")
+
+Section4:NewButton("Infinite Server Hop", "Nhảy server liên tục", function()
+end)
+
+Section4:NewButton("Find Sword Dealer (Sea 2)", "Săn người bán kiếm", function()
+end)
+
+-- =========================================================
+-- TAB 5: MIRAGE & PUZZLE (Bánh răng & Mặt trăng)
+-- =========================================================
+local Tab5 = Window:NewTab("🌕 Mirage & Race")
+local Section5 = Tab5:NewSection("Mirage Island Helper")
+
+Section5:NewButton("Auto Blue Gear", "Tự động nhặt bánh răng xanh", function()
+end)
+
+Section5:NewToggle("Look at Moon (Auto)", "Tự động nhìn mặt trăng", function(state)
+    _G.LookAtMoon = state
+end)
+
+-- =========================================================
+-- TAB 6: QUESTS & MELEE (Võ & Vũ khí)
+-- =========================================================
+local Tab6 = Window:NewTab("⚔️ Quest & Melee")
+local Section6 = Tab6:NewSection("Fighting Styles")
+
+Section6:NewButton("Auto Sharkman Karate V3", "Đánh Boss lấy Key & Học võ", function()
+end)
+
+Section6:NewButton("Auto Soul Guitar", "Làm nhiệm vụ lấy Đàn", function()
+end)
+
+Section6:NewButton("Auto CDK / TTK", "Săn kiếm huyền thoại", function()
+end)
+
+-- =========================================================
+-- TAB 7: SHOP & ESP (Cửa hàng & Nhìn xuyên)
+-- =========================================================
+local Tab7 = Window:NewTab("🛒 Shop & ESP")
+local Section7 = Tab7:NewSection("Collectibles")
+
+Section7:NewButton("Auto Random Bone", "Đổi xương tại Death King", function()
+end)
+
+Section7:NewButton("Auto Buy Haki Color", "Săn màu Haki huyền thoại", function()
+end)
+
+Section7:NewToggle("ESP Players/Fruits/Chest", "Nhìn xuyên tường", function(state)
+    _G.ESP = state
 end)
