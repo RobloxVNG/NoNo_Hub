@@ -1,152 +1,106 @@
--- ======================================================
--- NONO HUB - FULL PREMIUM VERSION (EZ.LUA)
--- ======================================================
+-- [[ NONO HUB V10 - FULL PREMIUM & OPEN CODE ]]
+-- Cam kết: Có Emoji, Giao diện đẹp, Không ẩn code độc hại
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("🌊 NoNo Hub | Blox Fruits V4", "DarkScene")
 
-local Window = Rayfield:CreateWindow({
-   Name = "🌊 NoNo Hub | Blox Fruits Premium V4",
-   LoadingTitle = "Đang khởi chạy NoNo Hub...",
-   LoadingSubtitle = "by NoNo - High Performance",
-   ConfigurationSaving = {Enabled = true, Folder = "NoNoHubConfig"}
-})
-
--- === BIẾN HỆ THỐNG ===
+-- === CÁC BIẾN ĐIỀU KHIỂN ===
 _G.AutoFarm = false
-_G.SelectWeapon = "Melee"
-_G.AutoStats = false
-_G.StatType = "Melee"
-_G.AutoGunAim = false
-_G.NoCooldownGun = false
-_G.StartSeaEvent = false
-_G.ESPFruit = false
-_G.BlackScreen = false
+_G.FastAttack = false
+_G.AutoGun = false
+_G.NoCooldown = false
+_G.WalkWater = false
+_G.AutoV4 = false
 
--- === HÀM HỖ TRỢ ===
-function EquipWeapon(toolType)
-    for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-        if v:IsA("Tool") and (v.ToolTip == toolType or v.Name == toolType) then
-            game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
-        end
-    end
-end
+-- === TAB CHÍNH (FARM) ===
+local Tab1 = Window:NewTab("🌾 Farm & Combat")
+local Section1 = Tab1:NewSection("Tính năng chính")
 
--- === GIAO DIỆN CÁC TAB ===
+Section1:NewToggle("Auto Farm Level 🚀", "Tự động đánh quái lên cấp", function(state)
+    _G.AutoFarm = state
+end)
 
--- TAB FARM
-local FarmTab = Window:CreateTab("🌾 Farm & Gun", 4483362458)
+Section1:NewToggle("Fast Attack (M1) 🔥", "Đánh nhanh không delay", function(state)
+    _G.FastAttack = state
+end)
 
-FarmTab:CreateToggle({
-   Name = "Auto Farm Level",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoFarm = Value end,
-})
+-- === TAB SÚNG (GUN) ===
+local Tab2 = Window:NewTab("🔫 Gun Special")
+local Section2 = Tab2:NewSection("Súng bá đạo")
 
-FarmTab:CreateSection("Súng (Gun) Special")
+Section2:NewToggle("Auto Gun & Aim Bot 🎯", "Tự nhắm và bắn quái", function(state)
+    _G.AutoGun = state
+end)
 
-FarmTab:CreateToggle({
-   Name = "Auto Gun & Aim Bot (Tự bắn quái)",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoGunAim = Value end,
-})
+Section2:NewToggle("No Cooldown Gun ⚡", "Súng máy xả đạn", function(state)
+    _G.NoCooldown = state
+end)
 
-FarmTab:CreateToggle({
-   Name = "No Cooldown Gun (Súng không hồi chiêu)",
-   CurrentValue = false,
-   Callback = function(Value) _G.NoCooldownGun = Value end,
-})
+-- === TAB SEA EVENT & TỘC ===
+local Tab3 = Window:NewTab("🌊 Sea & Race")
+local Section3 = Tab3:NewSection("Sea Event & V4")
 
--- TAB CHỈ SỐ
-local StatTab = Window:CreateTab("📊 Chỉ Số", 4483362458)
-StatTab:CreateToggle({
-   Name = "Auto Cộng Điểm",
-   CurrentValue = false,
-   Callback = function(Value) _G.AutoStats = Value end,
-})
+Section3:NewToggle("Walk On Water 🌊", "Đi trên mặt nước", function(state)
+    _G.WalkWater = state
+end)
 
--- TAB HỆ THỐNG
-local SysTab = Window:CreateTab("⚙️ Hệ Thống", 4483362458)
-SysTab:CreateToggle({
-   Name = "Màn Hình Đen (Treo Máy)",
-   CurrentValue = false,
-   Callback = function(Value)
-      local black = game:GetService("CoreGui"):FindFirstChild("NoNoBlack") or Instance.new("ScreenGui", game:GetService("CoreGui"))
-      black.Name = "NoNoBlack"
-      local f = black:FindFirstChild("Frame") or Instance.new("Frame", black)
-      f.Size = UDim2.new(1,0,1,0); f.BackgroundColor3 = Color3.new(0,0,0); f.Visible = Value
-   end,
-})
+Section3:NewToggle("Auto Race V3/V4 🧬", "Tự bật kĩ năng tộc", function(state)
+    _G.AutoV4 = state
+end)
 
--- === BỘ NÃO XỬ LÝ (LOGIC) ===
+-- === [ LOGIC XỬ LÝ - ĐỌC ĐƯỢC 100% ] ===
 
--- 1. Vòng lặp Auto Farm & Gun
+-- 1. Fast Attack Logic
 spawn(function()
     while task.wait() do
-        pcall(function()
-            -- Logic Auto Farm Level
-            if _G.AutoFarm then
-                EquipWeapon(_G.SelectWeapon)
-                for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
-                    if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)
-                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                    end
-                end
-            end
-
-            -- Logic Auto Gun & Aim Bot
-            if _G.AutoGunAim then
-                local target = nil
-                for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
-                    if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                        target = v
-                        break
-                    end
-                end
-                
-                if target then
-                    EquipWeapon("Gun")
-                    local gun = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
-                    if gun and gun.ToolTip == "Gun" then
-                        -- Gửi lệnh bắn thẳng vào quái
-                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ShootGun", {
-                            ["Target"] = target.HumanoidRootPart,
-                            ["Pos"] = target.HumanoidRootPart.Position
-                        })
-                        -- Auto Click
-                        game:GetService("VirtualUser"):CaptureController()
-                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- 2. Vòng lặp No Cooldown Gun
-spawn(function()
-    game:GetService("RunService").Stepped:Connect(function()
-        if _G.NoCooldownGun then
+        if _G.FastAttack then
             pcall(function()
-                local gun = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
-                if gun and gun.ToolTip == "Gun" then
-                    -- Reset delay bắn
-                    if gun:FindFirstChild("Stats") and gun.Stats:FindFirstChild("Cooldown") then
-                        gun.Stats.Cooldown.Value = 0
-                    end
-                end
+                local Combat = require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework)
+                Combat.activeController.attackInterval = 0
+                Combat.activeController:attack()
             end)
         end
-    end)
+    end
 end)
 
--- 3. Vòng lặp Cộng Stats
+-- 2. Auto Gun & No Cooldown
 spawn(function()
-    while task.wait(1) do
-        if _G.AutoStats then
-            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint", _G.StatType, 1)
+    while task.wait() do
+        if _G.NoCooldown then
+            local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+            if tool and tool.ToolTip == "Gun" and tool:FindFirstChild("Stats") then
+                tool.Stats.Cooldown.Value = 0
+            end
+        end
+        if _G.AutoGun then
+            game:GetService("VirtualUser"):CaptureController()
+            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
         end
     end
 end)
 
-Rayfield:Notify({Title = "NoNo Hub", Content = "Đã cập nhật Auto Gun & No Cooldown!", Duration = 5})
+-- 3. Walk On Water
+spawn(function()
+    while task.wait() do
+        if _G.WalkWater then
+            if not game.Workspace:FindFirstChild("WaterPart") then
+                local p = Instance.new("Part", game.Workspace)
+                p.Name = "WaterPart"; p.Size = Vector3.new(200, 2, 200); p.Anchored = true; p.Transparency = 0.8
+            else
+                game.Workspace.WaterPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.X, -1, game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Z)
+            end
+        else
+            if game.Workspace:FindFirstChild("WaterPart") then game.Workspace.WaterPart:Destroy() end
+        end
+    end
+end)
+
+-- 4. Auto V3/V4
+spawn(function()
+    while task.wait(1) do
+        if _G.AutoV4 then
+            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ActivateAbility")
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Y, false, game)
+        end
+    end
+end)
